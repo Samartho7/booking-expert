@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const { Server } = require('socket.io');
 const http = require('http');
+const path = require('path');
 
 const expertRoutes = require('./routes/expertRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
@@ -37,6 +38,15 @@ app.set('io', io);
 
 app.use('/api/experts', expertRoutes);
 app.use('/api/bookings', bookingRoutes);
+
+// --- UNIFIED DEPLOYMENT ---
+// Serve frontend static files inside the 'dist' folder built by Vite
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Catch-all route to hand over routing to React Router DOM
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/bookingexpert';
