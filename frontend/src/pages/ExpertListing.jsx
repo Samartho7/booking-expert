@@ -22,10 +22,10 @@ const ExpertListing = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/experts`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || ''}/api/experts`, {
           params: { page, limit, search, category }
         });
-        setExperts(res.data.experts);
+        setExperts(res.data.experts || []);
         setTotalPages(res.data.pages);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch experts. Please try again later.');

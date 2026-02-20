@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { ChevronLeft, Star, Award, Calendar, Clock } from 'lucide-react';
 import '../index.css';
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_API_URL;
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_URL || '';
 
 const ExpertDetail = () => {
   const { id } = useParams();
@@ -20,8 +20,12 @@ const ExpertDetail = () => {
     // 1. Fetch Expert Data
     const fetchExpert = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/experts/${id}`);
-        setExpert(res.data);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || ''}/api/experts/${id}`);
+        if(res.data && res.data.timeSlots) {
+           setExpert(res.data);
+        } else {
+           throw new Error('Invalid expert data structure');
+        }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch expert details.');
       } finally {
@@ -96,8 +100,8 @@ const ExpertDetail = () => {
     </div>
   );
 
-  // Group slots by Date
-  const groupedSlots = expert.timeSlots.reduce((acc, slot) => {
+  // Group slots by Date (safely checking if timeSlots exists)
+  const groupedSlots = expert?.timeSlots?.reduce((acc, slot) => {
     if (!acc[slot.date]) acc[slot.date] = [];
     acc[slot.date].push(slot);
     return acc;

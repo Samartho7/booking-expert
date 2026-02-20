@@ -47,7 +47,7 @@ const BookingForm = () => {
     }
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/experts/${expertId}/book`, {
+      await axios.post(`${import.meta.env.VITE_API_URL || ''}/api/experts/${expertId}/book`, {
         slotId,
         ...formData
       });

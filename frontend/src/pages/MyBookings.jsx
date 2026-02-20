@@ -23,8 +23,8 @@ const MyBookings = () => {
     setSearched(true);
     
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${encodeURIComponent(email)}`);
-      setBookings(res.data);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ''}/api/bookings?email=${encodeURIComponent(email)}`);
+      setBookings(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.error || 'Failed to fetch bookings.');
     } finally {
@@ -43,7 +43,7 @@ const MyBookings = () => {
   const handleStatusUpdate = async (id, newStatus) => {
     setUpdatingId(id);
     try {
-      await axios.patch(`${import.meta.env.VITE_API_URL}/api/bookings/${id}/status`, { status: newStatus });
+      await axios.patch(`${import.meta.env.VITE_API_URL || ''}/api/bookings/${id}/status`, { status: newStatus });
       setBookings(prev => prev.map(b => b._id === id ? { ...b, status: newStatus } : b));
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update booking status.');
@@ -57,7 +57,7 @@ const MyBookings = () => {
 
     setDeletingId(id);
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL || ''}/api/bookings/${id}`);
       setBookings(prev => prev.filter(b => b._id !== id));
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete booking.');
@@ -97,7 +97,7 @@ const MyBookings = () => {
         <div className="error-state">
           <p>{error}</p>
         </div>
-      ) : searched && bookings.length === 0 && !loading ? (
+      ) : searched && bookings?.length === 0 && !loading ? (
         <div className="empty-state">
           <p>No bookings found for <strong>{email}</strong>.</p>
         </div>
